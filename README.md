@@ -1,46 +1,151 @@
-# Getting Started with Create React App
+# 🔥 Fire & Gas Detection Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a **React-based** real-time dashboard that visualizes fire and gas sensor data using **Firebase** and **Recharts**.
 
-## Available Scripts
+## 📊 Overview
 
-In the project directory, you can run:
+This app retrieves sensor data from a Firebase Realtime Database and renders it into dynamic charts including:
+- Line Chart (real-time trends)
+- Pie Chart (proportions)
+- Bar Chart (monthly analysis)
+- A paginated, filterable alert log
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 🛠️ Key Technologies
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **React** + **TypeScript**
+- **Firebase Realtime Database**
+- **Recharts** (Charting library)
+- **CSS** for UI styling
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🧠 Code Structure & Explanation
 
-### `npm run build`
+### 1. **State Definitions**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```tsx
+const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
+const [filteredAlerts, setFilteredAlerts] = useState<Alert[]>([]);
+const [chartData, setChartData] = useState<ChartData[]>([]);
+const [fireCount, setFireCount] = useState(0);
+const [gasCount, setGasCount] = useState(0);
+const [dailyCount, setDailyCount] = useState<{ date: string; fire: number; gas: number }[]>([]);
+Purpose:
+These states manage different aspects of the app:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+allAlerts: All alerts fetched from Firebase
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+filteredAlerts: Alerts after applying date/time filters
 
-### `npm run eject`
+chartData: Data used in the real-time line chart
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+fireCount, gasCount: For pie chart visualization
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+dailyCount: Monthly aggregated data for bar chart
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+useEffect(() => {
+  const alertsRef = query(ref(database, "alerts"), limitToLast(100));
+  const unsubscribe = onValue(alertsRef, async (snapshot) => {
+    const data = snapshot.val();
+    ...
+    setAllAlerts(alertList);
+    applyFilter(alertList);
+    updateStats(alertList);
+  });
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+  return () => unsubscribe();
+}, [sortOrder]);
+Explanation:
 
-## Learn More
+Fetches the latest 100 entries from the alerts node.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Resolves alertIDs and then retrieves associated sensors/{alertID} values.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Cleans and transforms data into usable JavaScript objects.
+
+Updates UI states accordingly.
+
+const applyFilter = (alerts: Alert[]) => {
+  const { date, time } = filter;
+
+  const filtered = alerts.filter((alert) => {
+    const alertDate = new Date(alert.timestamp);
+    ...
+    return matchesDate && matchesTime;
+  });
+
+  const sorted = [...filtered].sort((a, b) =>
+    sortOrder === "newest" ? b.timestamp - a.timestamp : a.timestamp - b.timestamp
+  );
+
+  setFilteredAlerts(sorted);
+  updateChartData(sorted);
+};
+Purpose:
+This function:
+
+Applies filters based on selected date and time.
+
+Sorts the results by "newest" or "oldest" first.
+
+Updates filtered results and chart data accordingly.
+
+
+<ul>
+  {paginatedAlerts.map((alert, index) => {
+    const date = new Date(alert.timestamp);
+    ...
+    return (
+      <li key={index}>
+        [{formattedDate}] Fire: {alert.fire} | Gas: {alert.gas}
+      </li>
+    );
+  })}
+</ul>
+# 📧 Firebase Alert Email Notification Function
+
+This Firebase Cloud Function automatically sends an **email alert** using Gmail when new fire or gas sensor data is created in your Firebase Realtime Database.
+
+---
+
+## 🔍 Overview
+
+When a new entry is added to `/sensors/{sensorId}`, this function checks the sensor data and sends an email alert indicating whether fire or gas was detected.
+
+---
+
+## 🧰 Technologies Used
+
+- **Firebase Cloud Functions**
+- **Nodemailer** for sending emails
+- **dotenv** for secure environment variables
+
+---
+
+## 🚀 How It Works
+
+### 1. **Import Modules & Setup Environment**
+
+```ts
+import * as functions from "firebase-functions/v1";
+import * as nodemailer from "nodemailer";
+import * as dotenv from "dotenv";
+dotenv.config();
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_EMAIL,
+    pass: "bvshnzquwhxzdoxa", // Note: Use App Password, not regular password!
+  },
+});
+export const sendEmailOnAlert = functions.database
+  .ref("/sensors/{sensorId}")
+  .onCreate(async (snapshot) => {
+    const sensor = snapshot.val();
+    ...
+This Cloud Function triggers when a new sensor entry is added to /sensors/{sensorId} in the Realtime Database.
+let detectionMessage = "💨 Gas detected";
+if (sensor?.fire == 1) detectionMessage = "🔥 Fire detected";
+else if (sensor?.gas == 1) detectionMessage = "💨 Gas detected";
