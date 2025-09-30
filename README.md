@@ -23,16 +23,9 @@ This app retrieves sensor data from a Firebase Realtime Database and renders it 
 
 ## 🧠 Code Structure & Explanation
 
-### 1. **State Definitions**
 
-```tsx
-const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
-const [filteredAlerts, setFilteredAlerts] = useState<Alert[]>([]);
-const [chartData, setChartData] = useState<ChartData[]>([]);
-const [fireCount, setFireCount] = useState(0);
-const [gasCount, setGasCount] = useState(0);
-const [dailyCount, setDailyCount] = useState<{ date: string; fire: number; gas: number }[]>([]);
 Purpose:
+
 These states manage different aspects of the app:
 
 allAlerts: All alerts fetched from Firebase
@@ -44,6 +37,18 @@ chartData: Data used in the real-time line chart
 fireCount, gasCount: For pie chart visualization
 
 dailyCount: Monthly aggregated data for bar chart
+
+### 1. **State Definitions**
+
+```tsx
+const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
+const [filteredAlerts, setFilteredAlerts] = useState<Alert[]>([]);
+const [chartData, setChartData] = useState<ChartData[]>([]);
+const [fireCount, setFireCount] = useState(0);
+const [gasCount, setGasCount] = useState(0);
+const [dailyCount, setDailyCount] = useState<{ date: string; fire: number; gas: number }[]>([]);
+
+
 
 useEffect(() => {
   const alertsRef = query(ref(database, "alerts"), limitToLast(100));
@@ -137,7 +142,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.GMAIL_EMAIL,
-    pass: "bvshnzquwhxzdoxa", // Note: Use App Password, not regular password!
+    pass: " ", // Note: Use App Password, not regular password!
   },
 });
 export const sendEmailOnAlert = functions.database
