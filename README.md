@@ -1,8 +1,8 @@
-# 🔥 Fire & Gas Detection Dashboard
+# Fire & Gas Detection Dashboard
 
 This is a **React-based** real-time dashboard that visualizes fire and gas sensor data using **Firebase** and **Recharts**.
 
-## 📊 Overview
+## Overview
 
 This app retrieves sensor data from a Firebase Realtime Database and renders it into dynamic charts including:
 - Line Chart (real-time trends)
@@ -12,7 +12,7 @@ This app retrieves sensor data from a Firebase Realtime Database and renders it 
 
 ---
 
-## 🛠️ Key Technologies
+## Key Technologies
 
 - **React** + **TypeScript**
 - **Firebase Realtime Database**
@@ -21,7 +21,7 @@ This app retrieves sensor data from a Firebase Realtime Database and renders it 
 
 ---
 
-## 🧠 Code Structure & Explanation
+## Code Structure & Explanation
 
 
 Purpose:
