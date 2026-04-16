@@ -109,13 +109,15 @@ Updates filtered results and chart data accordingly.
     );
   })}
 </ul>
-# 📧 Firebase Alert Email Notification Function
+
+
+# Firebase Alert Email Notification Function
 
 This Firebase Cloud Function automatically sends an **email alert** using Gmail when new fire or gas sensor data is created in your Firebase Realtime Database.
 
 ---
 
-## 🔍 Overview
+## Overview
 
 When a new entry is added to `/sensors/{sensorId}`, this function checks the sensor data and sends an email alert indicating whether fire or gas was detected.
 
@@ -151,6 +153,6 @@ export const sendEmailOnAlert = functions.database
     const sensor = snapshot.val();
     ...
 This Cloud Function triggers when a new sensor entry is added to /sensors/{sensorId} in the Realtime Database.
-let detectionMessage = "💨 Gas detected";
+let detectionMessage = "Gas detected";
 if (sensor?.fire == 1) detectionMessage = " Fire detected";
 else if (sensor?.gas == 1) detectionMessage = "Gas detected";
