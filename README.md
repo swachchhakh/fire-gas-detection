@@ -121,7 +121,7 @@ When a new entry is added to `/sensors/{sensorId}`, this function checks the sen
 
 ---
 
-## 🧰 Technologies Used
+## Technologies Used
 
 - **Firebase Cloud Functions**
 - **Nodemailer** for sending emails
@@ -129,7 +129,7 @@ When a new entry is added to `/sensors/{sensorId}`, this function checks the sen
 
 ---
 
-## 🚀 How It Works
+## How It Works
 
 ### 1. **Import Modules & Setup Environment**
 
@@ -152,5 +152,5 @@ export const sendEmailOnAlert = functions.database
     ...
 This Cloud Function triggers when a new sensor entry is added to /sensors/{sensorId} in the Realtime Database.
 let detectionMessage = "💨 Gas detected";
-if (sensor?.fire == 1) detectionMessage = "🔥 Fire detected";
-else if (sensor?.gas == 1) detectionMessage = "💨 Gas detected";
+if (sensor?.fire == 1) detectionMessage = " Fire detected";
+else if (sensor?.gas == 1) detectionMessage = "Gas detected";
